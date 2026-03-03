@@ -1,27 +1,27 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
-// Çevresel değişkenleri yükle (ileride oluşturacağımız .env dosyasından okuyacak)
+// Çevresel değişkenleri yükle
 dotenv.config();
 
-// PostgreSQL bağlantı havuzunu (Pool) oluştur
-// Tekil bağlantı yerine Pool kullanmak, gelen istekleri sıraya sokarak performansı ciddi oranda artırır.
+/**
+ * Modern Bulut Uyumluluğu:
+ * Artık host, user, password gibi parçalı değişkenler yerine
+ * doğrudan tek parça olan DATABASE_URL (Connection String) kullanıyoruz.
+ * Bu yöntem Render ve Neon.tech arasındaki en güvenli ve hızlı yoldur.
+ */
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'custom_blog_db',
-  password: process.env.DB_PASSWORD || 'sifreniburayayaz',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  connectionString: process.env.DATABASE_URL,
 });
 
-// Bağlantıyı test etmek için bir olay dinleyici (event listener)
+// Bağlantı başarıyla kurulduğunda tetiklenir
 pool.on('connect', () => {
-  console.log('PostgreSQL veritabanına başarıyla bağlanıldı.');
+  console.log('PostgreSQL (Neon.tech) veritabanına başarıyla bağlanıldı.');
 });
 
+// Bağlantı sırasında bir hata oluşursa tetiklenir
 pool.on('error', (err) => {
   console.error('Veritabanı bağlantısında kritik hata:', err);
-  process.exit(-1);
 });
 
 export default pool;
