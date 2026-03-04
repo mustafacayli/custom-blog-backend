@@ -87,7 +87,9 @@ export class PostController {
             }
             res.status(200).json({ message: 'Yazı güncellendi', post: updatedPost });
         } catch (error: any) {
-            res.status(500).json({ error: 'Yazı güncellenirken hata oluştu.' });
+            // HATA OLURSA RENDER LOGLARINDA GÖRELİM VE FRONTEND'E GERÇEK HATAYI İLETELİM
+            console.error("🚨 YAZI GÜNCELLEME HATASI:", error);
+            res.status(500).json({ error: error.message || 'Yazı güncellenirken hata oluştu.' });
         }
     }
 
