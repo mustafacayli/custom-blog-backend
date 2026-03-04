@@ -1,20 +1,21 @@
 // src/repositories/user.repository.ts
 import pool from '../config/db';
-import type { User } from '../types/user'; // <--- Buraya 'type' kelimesi eklendi
+import type { User } from '../types/user';
 
 export class UserRepository {
-    // 1. Email adresine göre kullanıcı bulma (Sisteme giriş yaparken kullanacağız)
+    // 1. Email adresine göre kullanıcı bulma
     static async findByEmail(email: string): Promise<User | null> {
-        // $1 kullanımı bizi SQL Injection (Veritabanı hackleme) saldırılarından korur
+        // SELECT * diyerek tüm sütunları (id, email, password vb.) güvenle çekiyoruz
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         return result.rows[0] || null;
     }
 
-    // 2. Yeni kullanıcı oluşturma (Kendi admin hesabımızı kurarken kullanacağız)
+    // 2. Yeni kullanıcı oluşturma
     static async create(email: string, passwordHash: string): Promise<User> {
+        // DÜZELTME: password_hash yerine password kullandık ve $3 parametresini sildik
         const query = `
-            INSERT INTO users (email, password_hash)
-            VALUES ($1, $2, $3)
+            INSERT INTO users (email, password)
+            VALUES ($1, $2)
             RETURNING *;
         `;
         const result = await pool.query(query, [email, passwordHash]);
