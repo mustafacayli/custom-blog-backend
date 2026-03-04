@@ -11,13 +11,13 @@ export class UserRepository {
     }
 
     // 2. Yeni kullanıcı oluşturma (Kendi admin hesabımızı kurarken kullanacağız)
-    static async create(username: string, email: string, passwordHash: string): Promise<User> {
+    static async create(email: string, passwordHash: string): Promise<User> {
         const query = `
-            INSERT INTO users (username, email, password_hash)
+            INSERT INTO users (email, password_hash)
             VALUES ($1, $2, $3)
             RETURNING *;
         `;
-        const result = await pool.query(query, [username, email, passwordHash]);
+        const result = await pool.query(query, [email, passwordHash]);
         return result.rows[0];
     }
 }

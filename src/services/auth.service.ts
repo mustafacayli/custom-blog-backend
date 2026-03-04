@@ -6,7 +6,7 @@ import type { User } from '../types/user';
 
 export class AuthService {
     // 1. Yeni Kullanıcı Kaydı (Register)
-    static async register(username: string, email: string, password: string): Promise<User> {
+    static async register(email: string, password: string): Promise<User> {
         // Önce bu email sistemde var mı diye kontrol et
         const existingUser = await UserRepository.findByEmail(email);
         if (existingUser) {
@@ -18,7 +18,7 @@ export class AuthService {
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
         // Kriptolanmış şifreyle kullanıcıyı veritabanına kaydet
-        const newUser = await UserRepository.create(username, email, passwordHash);
+        const newUser = await UserRepository.create(email, passwordHash);
         return newUser;
     }
 
