@@ -4,12 +4,18 @@ import { PostService } from '../services/post.service';
 import { AuthRequest } from '../middlewares/auth.middleware'; // Genişletilmiş Request tipimizi çağırdık
 
 export class PostController {
-    // 1. Yeni yazı ekleme (Artık GERÇEK kullanıcı ID'si ile)
+    // 1. Yeni yazı ekleme (Artık GERÇEK kullanıcı ID'si ve Zırhlı Kontrol ile)
     static async create(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { title, content } = req.body;
+
+            // --- YENİ EKLENEN ZIRH (Eksik veri kontrolü) ---
+            if (!title || !content) {
+                res.status(400).json({ error: 'Lütfen başlık (title) ve içerik (content) alanlarını eksiksiz gönderin.' });
+                return;
+            }
+            // -----------------------------------------------
             
-            // Güvenlik görevlisinin (middleware) cebimize koyduğu gerçek ID'yi alıyoruz
             const authorId = req.user?.userId;
 
             if (!authorId) {
@@ -20,6 +26,8 @@ export class PostController {
             const newPost = await PostService.createPost(title, content, authorId);
             res.status(201).json({ message: 'Yazı başarıyla oluşturuldu', post: newPost });
         } catch (error: any) {
+            // Hata olursa Render loglarında tam nedenini görelim
+            console.error("🚨 YAZI EKLEME HATASI:", error);
             res.status(400).json({ error: error.message });
         }
     }
