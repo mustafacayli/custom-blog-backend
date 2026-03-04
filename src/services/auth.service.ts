@@ -24,21 +24,18 @@ export class AuthService {
 
     // 2. Kullanıcı Girişi (Login)
     static async login(email: string, password: string): Promise<{ user: User, token: string }> {
-        // Kullanıcıyı bul
         const user = await UserRepository.findByEmail(email);
         if (!user) {
             throw new Error('Kullanıcı bulunamadı.');
         }
 
-        // Girilen şifre ile veritabanındaki kriptolu şifre eşleşiyor mu kontrol et
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        // DÜZELTME: user.password_hash yerine user.password kullanıyoruz
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new Error('Hatalı şifre.');
         }
 
-        // Her şey doğruysa, JWT (JSON Web Token) dijital anahtarını oluştur
         const jwtSecret = process.env.JWT_SECRET || 'gizli_anahtar_yedek';
-        // Token'ın içine kullanıcının ID'sini gömüyoruz ve 24 saat geçerli kılıyoruz
         const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '24h' });
 
         return { user, token };

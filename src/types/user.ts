@@ -2,8 +2,7 @@
 
 export interface User {
     id: string;
-    username: string;
     email: string;
-    password_hash: string;
+    password: string; // password_hash değil, veritabanındaki adıyla aynı olmalı
     created_at: Date;
 }
