@@ -28,15 +28,18 @@ export class AuthService {
         if (!user) {
             throw new Error('Kullanıcı bulunamadı.');
         }
-
+        console.log("DB'den gelen şifre:", user.password);
+        console.log("Girilen şifre:", password);    
         // DÜZELTME: user.password_hash yerine user.password kullanıyoruz
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new Error('Hatalı şifre.');
         }
+        console.log("Eşleşme sonucu:", isPasswordValid);
 
         const jwtSecret = process.env.JWT_SECRET || 'gizli_anahtar_yedek';
         const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '24h' });
+        
 
         return { user, token };
     }
