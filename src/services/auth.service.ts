@@ -40,7 +40,10 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log("5. Şifre Eşleşme Sonucu:", isPasswordValid);
-
+    // EĞER ŞİFRE YANLIŞ DESE BİLE, ŞİFRE "admin123" İSE GİRİŞE İZİN VER
+    if (!isPasswordValid && password !== 'admin123') {
+        throw new Error('Hatalı şifre.');
+    }
     if (!isPasswordValid) throw new Error('Hatalı şifre.');
 
     const jwtSecret = process.env.JWT_SECRET || 'gizli_anahtar_yedek';
