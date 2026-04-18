@@ -23,6 +23,18 @@ app.get('/', (req, res) => {
     res.send('Blog API tıkır tıkır çalışıyor!');
 });
 
+// Render ve Neon.tech uyku modunu engelleme rotası
+app.get('/keep-alive', async (req, res) => {
+    try {
+        // Neon.tech veritabanını uyanık tutmak için basit bir sorgu atıyoruz
+        await pool.query('SELECT 1'); 
+        res.status(200).send('Sistem ve veritabanı uyanık!');
+    } catch (error) {
+        console.error('Keep-alive hatası:', error);
+        res.status(500).send('Veritabanı bağlantı hatası');
+    }
+});
+
 app.listen(PORT, async () => {
     console.log(`Sunucu http://localhost:${PORT} adresinde ayaklandı.`);
     try {
